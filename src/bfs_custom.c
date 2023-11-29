@@ -6,12 +6,17 @@
 #include "bitmap_reference.h"
 #include <stdint.h>
 #include <inttypes.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
 #include <limits.h>
 #include <assert.h>
 #include <stdint.h>
+#include <omp.h>
+
+int *queue, *next_queue;
+int queue_ptr, next_queue_ptr;
 
 //VISITED bitmap parameters
 unsigned long *visited;
@@ -23,12 +28,19 @@ oned_csr_graph g;
 
 //user should provide this function which would be called once to do kernel 1: graph convert
 void make_graph_data_structure(const tuple_graph* const tg) {
-	//graph conversion, can be changed by user by replacing oned_csr.{c,h} with new graph format 
-	convert_graph_to_oned_csr(tg, &g);
+	//graph conversion, can be changed by user by replacing oned_csr.{c,h} with new graph format
+	int i;
+    convert_graph_to_oned_csr(tg, &g);
+	column = g.column;
+	rowstarts = g.rowstarts;
 
-	column=g.column;
-	visited_size = (g.nlocalverts + ulong_bits - 1) / ulong_bits;
-	visited = xmalloc(visited_size*sizeof(unsigned long));
+	queue = xmalloc(g.nlocalverts * sizeof(int)); //100% of vertexes
+	next_queue = xmalloc(g.nlocalverts * sizeof(int));
+
+	for (i = 0; i < g.nlocalverts; i++) {
+		queue[i] = -1;
+		next_queue[i] = -1;
+	}
 	//user code to allocate other buffers for bfs
 }
 
@@ -36,8 +48,50 @@ void make_graph_data_structure(const tuple_graph* const tg) {
 //pred[] should be root for root, -1 for unrechable vertices
 //prior to calling run_bfs pred is set to -1 by calling clean_pred
 void run_bfs(int64_t root, int64_t* pred) {
+    unsigned int i, j;
 	pred_glob=pred;
 	//user code to do bfs
+	
+	int level = 0;
+    int sum = 0;
+	queue = (int *)malloc(g.nglobalverts * sizeof(int));
+    next_queue = (int *)malloc(g.nglobalverts * sizeof(int));
+	queue_ptr = 0, next_queue_ptr = 0;
+
+    pred[root] = root;
+    queue[queue_ptr] = root;
+    queue_ptr++;
+	sum++;
+
+    while (sum) {
+        #pragma omp parallel for num_threads(4)
+        for (i = 0; i < queue_ptr; i++) {
+            int current_root = -1;
+            #pragma omp critical
+            {
+                current_root = queue[i];
+            }
+
+            if (current_root != -1) {
+                for (j = rowstarts[queue[i]]; j < rowstarts[queue[i] + 1]; j++) {
+                    int neighbor = COLUMN(j);
+                    #pragma omp critical
+                    {
+                        if (pred[neighbor] == -1) {
+                            pred[neighbor] = current_root;
+                            next_queue[next_queue_ptr] = neighbor;
+                            next_queue_ptr++;
+                        }
+                    }
+                }
+            }
+        }
+
+        sum = next_queue_ptr;
+        queue_ptr = next_queue_ptr;
+        next_queue_ptr = 0;
+        int *temp = queue; queue = next_queue; next_queue = temp;
+    }
 }
 
 //we need edge count to calculate teps. Validation will check if this count is correct
