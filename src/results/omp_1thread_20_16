@@ -1,0 +1,46 @@
+SCALE:                          20
+edgefactor:                     16
+NBFS:                           32
+graph_generation:               39.515
+num_mpi_processes:              1
+construction_time:              9.90119
+bfs  min_time:                  6.72037
+bfs  firstquartile_time:        6.73064
+bfs  median_time:               6.73432
+bfs  thirdquartile_time:        6.74013
+bfs  max_time:                  6.7541
+bfs  mean_time:                 6.73515
+bfs  stddev_time:               0.00756634
+min_nedge:                      16775818
+firstquartile_nedge:            16775818
+median_nedge:                   16775818
+thirdquartile_nedge:            16775818
+max_nedge:                      16775818
+mean_nedge:                     16775818
+stddev_nedge:                   0
+bfs  min_TEPS:                  2.4838e+06
+bfs  firstquartile_TEPS:        2.48895e+06
+bfs  median_TEPS:               2.49109e+06
+bfs  thirdquartile_TEPS:        2.49245e+06
+bfs  max_TEPS:                  2.49626e+06
+bfs  harmonic_mean_TEPS:     !  2.49079e+06
+bfs  harmonic_stddev_TEPS:      502.568
+bfs  min_validate:              9.29725
+bfs  firstquartile_validate:    9.31336
+bfs  median_validate:           9.3221
+bfs  thirdquartile_validate:    9.32873
+bfs  max_validate:              9.35353
+bfs  mean_validate:             9.32268
+bfs  stddev_validate:           0.0146179
+
+Performance counter stats for './graph500_custom_bfs 20 16':
+
+    3,144,946,520      cache-misses              #   54.420 % of all cache refs      (28.57%)
+    5,778,999,587      cache-references                                              (28.57%)
+    4,569,353,941      L1-dcache-load-misses                                         (28.57%)
+      291,526,211      L1-icache-load-misses     #    0.16% of all L1-icache hits    (28.58%)
+  184,458,525,207      L1-icache-loads                                               (28.58%)
+    6,943,966,640      LLC-loads                                                     (28.57%)
+      224,917,511      LLC-stores                                                    (28.57%)
+
+    595.182948967 seconds time elapsed

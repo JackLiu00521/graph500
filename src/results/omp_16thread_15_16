@@ -1,0 +1,46 @@
+SCALE:                          15
+edgefactor:                     16
+NBFS:                           32
+graph_generation:               5.09156
+num_mpi_processes:              1
+construction_time:              0.93803
+bfs  min_time:                  1.11683
+bfs  firstquartile_time:        1.24634
+bfs  median_time:               1.32079
+bfs  thirdquartile_time:        1.36379
+bfs  max_time:                  1.62413
+bfs  mean_time:                 1.3195
+bfs  stddev_time:               0.101896
+min_nedge:                      523885
+firstquartile_nedge:            523885
+median_nedge:                   523885
+thirdquartile_nedge:            523885
+max_nedge:                      523885
+mean_nedge:                     523885
+stddev_nedge:                   0
+bfs  min_TEPS:                  322564
+bfs  firstquartile_TEPS:        384139
+bfs  median_TEPS:               396645
+bfs  thirdquartile_TEPS:        420338
+bfs  max_TEPS:                  469080
+bfs  harmonic_mean_TEPS:     !  397033
+bfs  harmonic_stddev_TEPS:      5506.72
+bfs  min_validate:              0.167275
+bfs  firstquartile_validate:    0.167612
+bfs  median_validate:           0.168077
+bfs  thirdquartile_validate:    0.168476
+bfs  max_validate:              0.170309
+bfs  mean_validate:             0.168157
+bfs  stddev_validate:           0.000731521
+
+Performance counter stats for './graph500_custom_bfs 15 16':
+
+      10,868,408      cache-misses              #    6.827 % of all cache refs      (28.58%)
+      159,188,535      cache-references                                              (28.60%)
+      116,252,987      L1-dcache-load-misses                                         (28.61%)
+      37,536,471      L1-icache-load-misses     #    0.38% of all L1-icache hits    (28.59%)
+    9,965,644,439      L1-icache-loads                                               (28.60%)
+      384,715,702      LLC-loads                                                     (28.60%)
+      21,868,709      LLC-stores                                                    (28.59%)
+
+    58.181433989 seconds time elapsed

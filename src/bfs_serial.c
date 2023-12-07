@@ -13,7 +13,6 @@
 #include <limits.h>
 #include <assert.h>
 #include <stdint.h>
-#include <omp.h>
 
 int *queue, *next_queue;
 int queue_ptr, next_queue_ptr;
@@ -44,50 +43,45 @@ void make_graph_data_structure(const tuple_graph* const tg) {
 	//user code to allocate other buffers for bfs
 }
 
+int compare(const void* a, const void* b) {
+    int int_a = *((int*) a);
+    int int_b = *((int*) b);
+
+    if (int_a == int_b) {
+        fprintf(stdout, "%d, ", int_a);
+        return 0;
+    }
+    else if (int_a < int_b) return -1;
+    else return 1;
+}
+
 //user should provide this function which would be called several times to do kernel 2: breadth first search
 //pred[] should be root for root, -1 for unrechable vertices
 //prior to calling run_bfs pred is set to -1 by calling clean_pred
 void run_bfs(int64_t root, int64_t* pred) {
-    unsigned int i, j;
 	pred_glob=pred;
-	//user code to do bfs
-	
-	int level = 0;
-    int sum = 0;
-	queue = (int *)malloc(g.nglobalverts * sizeof(int));
-    next_queue = (int *)malloc(g.nglobalverts * sizeof(int));
-	queue_ptr = 0, next_queue_ptr = 0;
 
+	queue_ptr = 0, next_queue_ptr = 0;
     pred[root] = root;
     queue[queue_ptr] = root;
     queue_ptr++;
-	sum++;
 
-    while (sum) {
-        #pragma omp parallel for num_threads(4)
+    while (queue_ptr) {
+        int i;
         for (i = 0; i < queue_ptr; i++) {
-            int current_root = -1;
-            #pragma omp critical
-            {
-                current_root = queue[i];
-            }
+            int current_root = queue[i];
 
-            if (current_root != -1) {
-                for (j = rowstarts[queue[i]]; j < rowstarts[queue[i] + 1]; j++) {
-                    int neighbor = COLUMN(j);
-                    #pragma omp critical
-                    {
-                        if (pred[neighbor] == -1) {
-                            pred[neighbor] = current_root;
-                            next_queue[next_queue_ptr] = neighbor;
-                            next_queue_ptr++;
-                        }
-                    }
+            int j;
+            for (j = rowstarts[queue[i]]; j < rowstarts[queue[i] + 1]; j++) {
+                int neighbor = COLUMN(j);
+                if (pred[neighbor] == -1) {
+                    pred[neighbor] = current_root;
+                    next_queue[next_queue_ptr] = neighbor;
+                    next_queue_ptr++;
                 }
             }
         }
 
-        sum = next_queue_ptr;
         queue_ptr = next_queue_ptr;
         next_queue_ptr = 0;
         int *temp = queue; queue = next_queue; next_queue = temp;

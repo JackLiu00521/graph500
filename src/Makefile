@@ -1,5 +1,6 @@
 CFLAGS = -Drestrict=__restrict__ -O3 -DGRAPH_GENERATOR_MPI -DREUSE_CSR_FOR_VALIDATION -I../aml
-OMPFLAG = -fopenmp
+OMPFLAG = -fopenmp -g
+ATOMICFLAG = -cc=icc
 LDFLAGS = -lpthread
 MPICC = mpicc
 
@@ -16,8 +17,14 @@ graph500_reference_bfs_sssp: bfs_reference.c $(SOURCES) $(HEADERS) $(GENERATOR_S
 graph500_reference_bfs: bfs_reference.c $(SOURCES) $(HEADERS) $(GENERATOR_SOURCES) csr_reference.c
 	$(MPICC) $(CFLAGS) $(LDFLAGS) -o graph500_reference_bfs bfs_reference.c csr_reference.c $(SOURCES) $(GENERATOR_SOURCES) -lm
 
-graph500_custom_bfs: bfs_custom.c $(SOURCES) $(HEADERS) $(GENERATOR_SOURCES) csr_reference.c
-	$(MPICC) $(CFLAGS) $(OMPFLAG) $(LDFLAGS) -o graph500_custom_bfs bfs_custom.c csr_reference.c $(SOURCES) $(GENERATOR_SOURCES) -lm
+graph500_omp_bfs: bfs_omp.c $(SOURCES) $(HEADERS) $(GENERATOR_SOURCES) csr_reference.c
+	$(MPICC) $(CFLAGS) $(OMPFLAG) $(LDFLAGS) -o graph500_omp_bfs bfs_omp.c csr_reference.c $(SOURCES) $(GENERATOR_SOURCES) -lm
+
+graph500_atomic_bfs: bfs_atomic.c $(SOURCES) $(HEADERS) $(GENERATOR_SOURCES) csr_reference.c
+	$(MPICC) $(CFLAGS) $(ATOMICFLAG) $(OMPFLAG) $(LDFLAGS) -o graph500_atomic_bfs bfs_atomic.c csr_reference.c $(SOURCES) $(GENERATOR_SOURCES) -lm
+
+graph500_serial_bfs: bfs_serial.c $(SOURCES) $(HEADERS) $(GENERATOR_SOURCES) csr_reference.c
+	$(MPICC) $(CFLAGS) $(LDFLAGS) -o graph500_serial_bfs bfs_serial.c csr_reference.c $(SOURCES) $(GENERATOR_SOURCES) -lm
 
 graph500_custom_bfs_sssp: bfs_custom.c sssp_custom.c $(SOURCES) $(HEADERS) $(GENERATOR_SOURCES) csr_reference.c
 	$(MPICC) $(CFLAGS) $(LDFLAGS) -o graph500_custom_bfs_sssp bfs_custom.c sssp_custom.c csr_reference.c $(SOURCES) $(GENERATOR_SOURCES) -lm
