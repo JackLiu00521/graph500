@@ -1,0 +1,3 @@
+==== atomic, scale = 1, num_thread = 16 ====
+==== atomic, scale = 2, num_thread = 16 ====
+==== atomic, scale = 3, num_thread = 16 ====

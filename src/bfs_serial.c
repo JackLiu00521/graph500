@@ -58,7 +58,7 @@ int compare(const void* a, const void* b) {
 //user should provide this function which would be called several times to do kernel 2: breadth first search
 //pred[] should be root for root, -1 for unrechable vertices
 //prior to calling run_bfs pred is set to -1 by calling clean_pred
-void run_bfs(int64_t root, int64_t* pred) {
+void run_bfs(int64_t root, int64_t* pred, int num_threads) {
 	pred_glob=pred;
 
 	queue_ptr = 0, next_queue_ptr = 0;

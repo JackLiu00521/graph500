@@ -228,7 +228,7 @@ typedef struct tuple_graph {
 						 * storage: */
 						void make_graph_data_structure(const tuple_graph* const tg);
 						void free_graph_data_structure(void);
-						void run_bfs(int64_t root, int64_t* pred);
+						void run_bfs(int64_t root, int64_t* pred, int num_thread);
 						void get_edge_count_for_teps(int64_t* edge_visit_count);
 						void clean_pred(int64_t* pred);
 						size_t get_nlocalverts_for_pred(void);

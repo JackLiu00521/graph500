@@ -20,7 +20,6 @@ atomic_long *pred_atomic;
 int *queue, *next_queue;
 int queue_ptr;
 atomic_int next_queue_ptr;
-int num_threads = 64;
 
 //VISITED bitmap parameters
 unsigned long *visited;
@@ -53,7 +52,7 @@ void make_graph_data_structure(const tuple_graph* const tg) {
 //user should provide this function which would be called several times to do kernel 2: breadth first search
 //pred[] should be root for root, -1 for unrechable vertices
 //prior to calling run_bfs pred is set to -1 by calling clean_pred
-void run_bfs(int64_t root, int64_t* pred) {
+void run_bfs(int64_t root, int64_t* pred, int num_threads) {
 	pred_glob=pred;
 	
 	queue_ptr = 0;

@@ -74,9 +74,11 @@ int main(int argc, char** argv) {
 	/* Parse arguments. */
 	int SCALE = 16;
 	int edgefactor = 16; /* nedges / nvertices, i.e., 2*avg. degree */
+	int num_threads = 1;
 	if (argc >= 2) SCALE = atoi(argv[1]);
 	if (argc >= 3) edgefactor = atoi(argv[2]);
-	if (argc <= 1 || argc >= 4 || SCALE == 0 || edgefactor == 0) {
+	if (argc >= 4) num_threads = atoi(argv[3]);
+	if (argc <= 1 || argc >= 5 || SCALE == 0 || edgefactor == 0) {
 		if (rank == 0) {
 			fprintf(stderr, "Usage: %s SCALE edgefactor\n  SCALE = log_2(# vertices) [integer, required]\n  edgefactor = (# edges) / (# vertices) = .5 * (average vertex degree) [integer, defaults to 16]\n(Random number seed and Kronecker initiator are in main.c)\n", argv[0]);
 		}
@@ -349,14 +351,14 @@ int main(int argc, char** argv) {
 	int bfs_root_idx,i;
 	if (!getenv("SKIP_BFS")) {
 		clean_pred(&pred[0]); //user-provided function from bfs_implementation.c
-		run_bfs(bfs_roots[0], &pred[0]); //warm-up
+		run_bfs(bfs_roots[0], &pred[0], num_threads); //warm-up
 #ifdef ENERGYLOOP_BFS
                 int eloop;
                 if(!my_pe()) printf("starting energy loop BFS\n");
                 for(eloop=0;eloop<1000000;eloop++)
                         for (bfs_root_idx = 0; bfs_root_idx < num_bfs_roots; ++bfs_root_idx) {
                 clean_pred(&pred[0]);
-                run_bfs(bfs_roots[bfs_root_idx], &pred[0]);
+                run_bfs(bfs_roots[bfs_root_idx], &pred[0], num_threads);
                 }
                 if(!my_pe()) printf("finished energy loop BFS\n");
 #endif
@@ -373,7 +375,7 @@ int main(int argc, char** argv) {
 			clean_pred(&pred[0]); //user-provided function from bfs_implementation.c
 			/* Do the actual BFS. */
 			double bfs_start = MPI_Wtime();
-			run_bfs(root, &pred[0]);
+			run_bfs(root, &pred[0], num_threads);
 			double bfs_stop = MPI_Wtime();
 			bfs_times[bfs_root_idx] = bfs_stop - bfs_start;
 			if (rank == 0) fprintf(stderr, "Time for BFS %d is %f\n", bfs_root_idx, bfs_times[bfs_root_idx]);
